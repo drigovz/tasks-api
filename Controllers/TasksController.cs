@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using TasksApi.Data;
 using TasksApi.Models;
 
@@ -16,10 +17,12 @@ namespace TasksApi.Controllers
     public class TasksController : ControllerBase
     {
         private readonly TasksContext _context;
+        private readonly ILogger _logger;
 
-        public TasksController(TasksContext context)
+        public TasksController(TasksContext context, ILogger<TasksController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -27,6 +30,7 @@ namespace TasksApi.Controllers
         {
             try
             {
+                _logger.LogInformation(" ########## GET api/tasks ########## ");
                 return await _context.Tasks.AsNoTracking().ToListAsync();
             }
             catch (Exception)
