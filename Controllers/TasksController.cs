@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using TasksApi.Data;
 using TasksApi.Models;
+using TasksApi.Repository;
 
 namespace TasksApi.Controllers
 {
@@ -16,22 +14,22 @@ namespace TasksApi.Controllers
     [ApiController]
     public class TasksController : ControllerBase
     {
-        private readonly TasksContext _context;
+        private readonly UnitOfWork _uof;
         private readonly ILogger _logger;
 
-        public TasksController(TasksContext context, ILogger<TasksController> logger)
+        public TasksController(UnitOfWork uof, ILogger<TasksController> logger)
         {
-            _context = context;
+            _uof = uof;
             _logger = logger;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Tasks>>> GetAllAsync()
+        public ActionResult<IEnumerable<Tasks>> GetAll()
         {
             try
             {
                 _logger.LogInformation(" ########## GET api/tasks ########## ");
-                return await _context.Tasks.AsNoTracking().ToListAsync();
+                return _uof.TasksRepository.Get().ToList();
             }
             catch (Exception)
             {
@@ -39,12 +37,18 @@ namespace TasksApi.Controllers
             }
         }
 
+        [HttpGet("listforname")]
+        public ActionResult<IEnumerable<Tasks>> GetTasksForName()
+        {
+            return _uof.TasksRepository.GetTasksForName().ToList();
+        }
+
         [HttpGet("{id}", Name = "GetTask")]
-        public async Task<IActionResult> GetTaskAsync([BindRequired] int id)
+        public IActionResult GetTask([BindRequired] int id)
         {
             try
             {
-                var task = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == id);
+                var task = _uof.TasksRepository.GetById(t => t.Id == id);
                 if (task == null)
                     return NotFound($"A categoria de código {id} não foi encontrada!");
                 else
@@ -57,15 +61,15 @@ namespace TasksApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] Tasks task)
+        public IActionResult Create([FromBody] Tasks task)
         {
             try
             {
                 if (task == null)
                     return BadRequest();
 
-                _context.Tasks.Add(task);
-                await _context.SaveChangesAsync();
+                _uof.TasksRepository.Add(task);
+                _uof.Commit();
 
                 return CreatedAtRoute("GetTask", new { id = task.Id }, task);
             }
@@ -76,22 +80,15 @@ namespace TasksApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync([BindRequired] int id, [FromBody] Tasks obj)
+        public IActionResult Update([BindRequired] int id, [FromBody] Tasks obj)
         {
             try
             {
                 if (obj == null || obj.Id != id)
                     return BadRequest($"Não foi possível atualizar a tarefa com código {id}");
 
-                Tasks task = _context.Tasks.FirstOrDefault(t => t.Id == id);
-                if (task == null)
-                    return NotFound($"Não foi possível localizar a tarefa com código {id}");
-
-                task.IsCompleted = obj.IsCompleted;
-                task.Name = obj.Name;
-
-                _context.Tasks.Update(task);
-                await _context.SaveChangesAsync();
+                _uof.TasksRepository.Update(obj);
+                _uof.Commit();
 
                 return new NoContentResult();
             }
@@ -102,16 +99,16 @@ namespace TasksApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync([BindRequired] int id)
+        public IActionResult Delete([BindRequired] int id)
         {
             try
             {
-                Tasks task = _context.Tasks.FirstOrDefault(t => t.Id == id);
+                Tasks task = _uof.TasksRepository.GetById(t => t.Id == id);
                 if (task == null)
                     return NotFound($"Não foi possível localizar a tarefa com código {id}");
 
-                _context.Tasks.Remove(task);
-                await _context.SaveChangesAsync();
+                _uof.TasksRepository.Delete(task);
+                _uof.Commit();
 
                 return new NoContentResult();
             }
