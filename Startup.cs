@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using TasksApi.Data;
 using TasksApi.Extensions;
 using TasksApi.Logging;
+using TasksApi.Repository;
 
 namespace TasksApi
 {
@@ -25,6 +26,7 @@ namespace TasksApi
         {
             services.AddControllers();
             services.AddDbContext<TasksContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConnectionDb")));
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddSwaggerGen();
         }
 
