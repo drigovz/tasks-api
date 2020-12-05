@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
+using TasksApi.DTOs;
 using TasksApi.Models;
 using TasksApi.Repository;
 
@@ -16,20 +18,24 @@ namespace TasksApi.Controllers
     {
         private readonly IUnitOfWork _uof;
         private readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
-        public TasksController(IUnitOfWork uof, ILogger<TasksController> logger)
+        public TasksController(IUnitOfWork uof, ILogger<TasksController> logger, IMapper mapper)
         {
             _uof = uof;
             _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Tasks>> GetAll()
+        public ActionResult<IEnumerable<TasksDTO>> GetAll()
         {
             try
             {
                 _logger.LogInformation(" ########## GET api/tasks ########## ");
-                return _uof.TasksRepository.Get().ToList();
+                var tasks = _uof.TasksRepository.Get().ToList();
+                var tasksDTO = _mapper.Map<List<TasksDTO>>(tasks);
+                return tasksDTO;
             }
             catch (Exception)
             {
@@ -38,9 +44,11 @@ namespace TasksApi.Controllers
         }
 
         [HttpGet("listforname")]
-        public ActionResult<IEnumerable<Tasks>> GetTasksForName()
+        public ActionResult<IEnumerable<TasksDTO>> GetTasksForName()
         {
-            return _uof.TasksRepository.GetTasksForName().ToList();
+            var task = _uof.TasksRepository.GetTasksForName().ToList();
+            var tasksDTO = _mapper.Map<List<TasksDTO>>(task);
+            return tasksDTO;
         }
 
         [HttpGet("{id}", Name = "GetTask")]
@@ -52,7 +60,10 @@ namespace TasksApi.Controllers
                 if (task == null)
                     return NotFound($"A categoria de código {id} não foi encontrada!");
                 else
-                    return new ObjectResult(task);
+                {
+                    var taskDTO = _mapper.Map<Tasks>(task);
+                    return new ObjectResult(taskDTO);
+                }
             }
             catch (Exception)
             {
@@ -61,17 +72,20 @@ namespace TasksApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] Tasks task)
+        public IActionResult Create([FromBody] TasksDTO taskDTO)
         {
             try
             {
-                if (task == null)
+                if (taskDTO == null)
                     return BadRequest();
 
+                var task = _mapper.Map<Tasks>(taskDTO);
                 _uof.TasksRepository.Add(task);
                 _uof.Commit();
 
-                return CreatedAtRoute("GetTask", new { id = task.Id }, task);
+                var resultTaskDTO = _mapper.Map<TasksDTO>(task);
+
+                return CreatedAtRoute("GetTask", new { id = resultTaskDTO.Id }, resultTaskDTO);
             }
             catch (Exception)
             {
@@ -80,17 +94,18 @@ namespace TasksApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update([BindRequired] int id, [FromBody] Tasks obj)
+        public IActionResult Update([BindRequired] int id, [FromBody] TasksDTO objDTO)
         {
             try
             {
-                if (obj == null || obj.Id != id)
+                if (objDTO == null || objDTO.Id != id)
                     return BadRequest($"Não foi possível atualizar a tarefa com código {id}");
 
-                _uof.TasksRepository.Update(obj);
+                var task = _mapper.Map<Tasks>(objDTO);
+                _uof.TasksRepository.Update(task);
                 _uof.Commit();
 
-                return new NoContentResult();
+                return new OkResult();
             }
             catch (Exception)
             {

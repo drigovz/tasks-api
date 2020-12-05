@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using TasksApi.Data;
+using TasksApi.DTOs.Mappings;
 using TasksApi.Extensions;
 using TasksApi.Logging;
 using TasksApi.Repository;
@@ -24,6 +26,16 @@ namespace TasksApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
+
+            mappingConfig.AssertConfigurationIsValid();
+
+            IMapper mapper = mappingConfig.CreateMapper();
+
+            services.AddSingleton(mapper);
             services.AddControllers();
             services.AddDbContext<TasksContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConnectionDb")));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
