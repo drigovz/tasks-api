@@ -14,10 +14,10 @@ namespace TasksApi.Controllers
     [ApiController]
     public class TasksController : ControllerBase
     {
-        private readonly UnitOfWork _uof;
+        private readonly IUnitOfWork _uof;
         private readonly ILogger _logger;
 
-        public TasksController(UnitOfWork uof, ILogger<TasksController> logger)
+        public TasksController(IUnitOfWork uof, ILogger<TasksController> logger)
         {
             _uof = uof;
             _logger = logger;
