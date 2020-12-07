@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TasksApi.Data;
 using TasksApi.Models;
+using TasksApi.Pagination;
 using TasksApi.Repository.Generic;
 
 namespace TasksApi.Repository.Task
@@ -14,7 +15,12 @@ namespace TasksApi.Repository.Task
 
         public IEnumerable<Tasks> GetTasksForName()
         {
-            return Get().OrderBy(t => t.Name).ToList();
+            throw new System.NotImplementedException();
+        }
+
+        public PagedList<Tasks> GetTasksPagination(TaskParameters taskParameters)
+        {
+            return PagedList<Tasks>.ToPagedList(Get().OrderBy(o => o.Name), taskParameters.Page, taskParameters.Size);
         }
     }
 }

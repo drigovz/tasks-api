@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using TasksApi.DTOs;
 using TasksApi.Models;
+using TasksApi.Pagination;
 using TasksApi.Repository;
 
 namespace TasksApi.Controllers
@@ -28,12 +30,25 @@ namespace TasksApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<TasksDTO>> GetAll()
+        public ActionResult<IEnumerable<TasksDTO>> GetAll([FromQuery] TaskParameters taskParameters)
         {
             try
             {
                 _logger.LogInformation(" ########## GET api/tasks ########## ");
-                var tasks = _uof.TasksRepository.Get().ToList();
+                var tasks = _uof.TasksRepository.GetTasksPagination(taskParameters);
+
+                var jsonMetadata = new
+                {
+                    tasks.TotalCount,
+                    tasks.PageSize,
+                    tasks.CurrentPage,
+                    tasks.TotalPages,
+                    tasks.HasNext,
+                    tasks.HasPrevious
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(jsonMetadata));
+
                 var tasksDTO = _mapper.Map<List<TasksDTO>>(tasks);
                 return tasksDTO;
             }
