@@ -30,7 +30,7 @@ namespace TasksApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<TasksDTO>> GetAll([FromQuery] TaskParameters taskParameters)
+        public ActionResult<IEnumerable<TasksDTO>> GetAll([FromQuery] QueryStringParameters taskParameters)
         {
             try
             {

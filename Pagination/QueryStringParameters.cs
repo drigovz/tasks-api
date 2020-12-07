@@ -1,6 +1,6 @@
 namespace TasksApi.Pagination
 {
-    public class TaskParameters
+    public class QueryStringParameters
     {
         public int Page { get; set; } = 1;
 

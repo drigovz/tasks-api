@@ -18,7 +18,7 @@ namespace TasksApi.Repository.Task
             throw new System.NotImplementedException();
         }
 
-        public PagedList<Tasks> GetTasksPagination(TaskParameters taskParameters)
+        public PagedList<Tasks> GetTasksPagination(QueryStringParameters taskParameters)
         {
             return PagedList<Tasks>.ToPagedList(Get().OrderBy(o => o.Name), taskParameters.Page, taskParameters.Size);
         }
