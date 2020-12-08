@@ -30,12 +30,12 @@ namespace TasksApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<TasksDTO>> GetAll([FromQuery] QueryStringParameters taskParameters)
+        public async Task<ActionResult<IEnumerable<TasksDTO>>> GetAllAsync([FromQuery] QueryStringParameters taskParameters)
         {
             try
             {
                 _logger.LogInformation(" ########## GET api/tasks ########## ");
-                var tasks = _uof.TasksRepository.GetTasksPagination(taskParameters);
+                var tasks = await _uof.TasksRepository.GetTasksPaginationAsync(taskParameters);
 
                 var jsonMetadata = new
                 {

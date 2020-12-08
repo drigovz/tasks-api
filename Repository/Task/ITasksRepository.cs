@@ -8,7 +8,7 @@ namespace TasksApi.Repository.Task
 {
     public interface ITasksRepository : IRepository<Tasks>
     {
-        PagedList<Tasks> GetTasksPagination(QueryStringParameters taskParameters);
+        Task<PagedList<Tasks>> GetTasksPaginationAsync(QueryStringParameters taskParameters);
         Task<IEnumerable<Tasks>> GetTasksForName();
     } 
 }

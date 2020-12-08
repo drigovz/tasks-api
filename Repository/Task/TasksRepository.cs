@@ -20,9 +20,9 @@ namespace TasksApi.Repository.Task
             return await Get().OrderBy(o => o.Name).ToListAsync();
         }
 
-        public PagedList<Tasks> GetTasksPagination(QueryStringParameters taskParameters)
+        public async Task<PagedList<Tasks>> GetTasksPaginationAsync(QueryStringParameters taskParameters)
         {
-            return PagedList<Tasks>.ToPagedList(Get().OrderBy(o => o.Name), taskParameters.Page, taskParameters.Size);
+            return await PagedList<Tasks>.ToPagedListAsync(Get().OrderBy(o => o.Name), taskParameters.Page, taskParameters.Size);
         }
     }
 }
