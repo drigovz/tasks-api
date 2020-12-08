@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using TasksApi.Data;
 using TasksApi.Models;
 using TasksApi.Pagination;
@@ -13,9 +15,9 @@ namespace TasksApi.Repository.Task
         {
         }
 
-        public IEnumerable<Tasks> GetTasksForName()
+        public async Task<IEnumerable<Tasks>> GetTasksForName()
         {
-            throw new System.NotImplementedException();
+            return await Get().OrderBy(o => o.Name).ToListAsync();
         }
 
         public PagedList<Tasks> GetTasksPagination(QueryStringParameters taskParameters)

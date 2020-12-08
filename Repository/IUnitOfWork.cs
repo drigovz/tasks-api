@@ -6,6 +6,6 @@ namespace TasksApi.Repository
     {
         ITasksRepository TasksRepository { get; }
 
-        void Commit(); 
+        System.Threading.Tasks.Task Commit(); 
     }
 }

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -59,19 +59,19 @@ namespace TasksApi.Controllers
         }
 
         [HttpGet("listforname")]
-        public ActionResult<IEnumerable<TasksDTO>> GetTasksForName()
+        public async Task<ActionResult<IEnumerable<TasksDTO>>> GetTasksForNameAsync()
         {
-            var task = _uof.TasksRepository.GetTasksForName().ToList();
+            var task = await _uof.TasksRepository.GetTasksForName();
             var tasksDTO = _mapper.Map<List<TasksDTO>>(task);
             return tasksDTO;
         }
 
         [HttpGet("{id}", Name = "GetTask")]
-        public IActionResult GetTask([BindRequired] int id)
+        public async Task<IActionResult> GetTaskAsync([BindRequired] int id)
         {
             try
             {
-                var task = _uof.TasksRepository.GetById(t => t.Id == id);
+                var task = await _uof.TasksRepository.GetById(t => t.Id == id);
                 if (task == null)
                     return NotFound($"A categoria de código {id} não foi encontrada!");
                 else
@@ -87,7 +87,7 @@ namespace TasksApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] TasksDTO taskDTO)
+        public async Task<IActionResult> Create([FromBody] TasksDTO taskDTO)
         {
             try
             {
@@ -96,7 +96,7 @@ namespace TasksApi.Controllers
 
                 var task = _mapper.Map<Tasks>(taskDTO);
                 _uof.TasksRepository.Add(task);
-                _uof.Commit();
+                await _uof.Commit();
 
                 var resultTaskDTO = _mapper.Map<TasksDTO>(task);
 
@@ -109,7 +109,7 @@ namespace TasksApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update([BindRequired] int id, [FromBody] TasksDTO objDTO)
+        public async Task<IActionResult> Update([BindRequired] int id, [FromBody] TasksDTO objDTO)
         {
             try
             {
@@ -118,7 +118,7 @@ namespace TasksApi.Controllers
 
                 var task = _mapper.Map<Tasks>(objDTO);
                 _uof.TasksRepository.Update(task);
-                _uof.Commit();
+                await _uof.Commit();
 
                 return new OkResult();
             }
@@ -129,16 +129,16 @@ namespace TasksApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete([BindRequired] int id)
+        public async Task<IActionResult> Delete([BindRequired] int id)
         {
             try
             {
-                Tasks task = _uof.TasksRepository.GetById(t => t.Id == id);
+                Tasks task = await _uof.TasksRepository.GetById(t => t.Id == id);
                 if (task == null)
                     return NotFound($"Não foi possível localizar a tarefa com código {id}");
 
                 _uof.TasksRepository.Delete(task);
-                _uof.Commit();
+                await _uof.Commit();
 
                 return new NoContentResult();
             }
