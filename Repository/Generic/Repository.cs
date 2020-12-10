@@ -8,9 +8,9 @@ namespace TasksApi.Repository.Generic
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        protected TasksContext _context;
+        protected AppDbContext _context;
 
-        public Repository(TasksContext context)
+        public Repository(AppDbContext context)
         {
             _context = context;
         }

@@ -6,9 +6,9 @@ namespace TasksApi.Repository
     public class UnitOfWork : IUnitOfWork
     {
         private TasksRepository _taskRepository;
-        public TasksContext _context;
+        public AppDbContext _context;
 
-        public UnitOfWork(TasksContext tasksContext)
+        public UnitOfWork(AppDbContext tasksContext)
         {
             _context = tasksContext;
         }

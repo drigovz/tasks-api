@@ -8,7 +8,7 @@ using TasksApi.Data;
 
 namespace TasksApi.Migrations
 {
-    [DbContext(typeof(TasksContext))]
+    [DbContext(typeof(AppDbContext))]
     [Migration("20201116011500_PopulatingDB")]
     partial class PopulatingDB
     {

@@ -11,7 +11,7 @@ namespace TasksApi.Repository.Task
 {
     public class TasksRepository : Repository<Tasks>, ITasksRepository
     {
-        public TasksRepository(TasksContext context) : base(context)
+        public TasksRepository(AppDbContext context) : base(context)
         {
         }
 

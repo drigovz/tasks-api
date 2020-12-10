@@ -1,11 +1,12 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TasksApi.Models;
 
 namespace TasksApi.Data
 {
-    public class TasksContext : DbContext
+    public class AppDbContext : IdentityDbContext
     {
-        public TasksContext(DbContextOptions<TasksContext> options)
+        public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         { }
 
