@@ -15,6 +15,7 @@ using TasksApi.Repository;
 
 namespace TasksApi.Controllers
 {
+    [ApiVersion("1.0")]
     [Route("api/[Controller]")]
     [ApiController]
     public class TasksController : ControllerBase
@@ -67,6 +68,11 @@ namespace TasksApi.Controllers
             return tasksDTO;
         }
 
+        /// <summary>
+        /// Obtém uma tarefa pelo ID
+        /// </summary>
+        /// <param name="id">ID da tarefa</param>
+        ///<returns>Objeto tarefa</returns>
         [HttpGet("{id}", Name = "GetTask")]
         public async Task<IActionResult> GetTaskAsync([BindRequired] int id)
         {
@@ -87,9 +93,22 @@ namespace TasksApi.Controllers
             }
         }
 
+        ///<summary>
+        /// Inclui uma nova tarefa
+        ///</summary>
+        ///<remarks>
+        /// Exemplo de requisição:
+        /// POST api/tasks
+        /// {
+        ///     "name": "Comprar playstation 5",
+        ///     "isCompleted": true
+        /// }
+        ///</remarks>
+        /// <param name="TasksDTO">Data Transfer Object da tarefa</param>
+        ///<returns>Objeto tarefa incluído</returns>
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] TasksDTO taskDTO)
+        public async Task<IActionResult> CreateAsync([FromBody] TasksDTO taskDTO)
         {
             try
             {
@@ -112,7 +131,7 @@ namespace TasksApi.Controllers
 
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([BindRequired] int id, [FromBody] TasksDTO objDTO)
+        public async Task<IActionResult> UpdateAsync([BindRequired] int id, [FromBody] TasksDTO objDTO)
         {
             try
             {
@@ -133,7 +152,7 @@ namespace TasksApi.Controllers
 
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([BindRequired] int id)
+        public async Task<IActionResult> DeleteAsync([BindRequired] int id)
         {
             try
             {

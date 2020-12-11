@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TasksApi</name>
+    </assembly>
+    <members>
+        <member name="M:TasksApi.Controllers.TasksController.GetTaskAsync(System.Int32)">
+             <summary>
+             Obtém uma tarefa pelo ID
+             </summary>
+             <param name="id">ID da tarefa</param>
+            <returns>Objeto tarefa</returns>
+        </member>
+        <member name="M:TasksApi.Controllers.TasksController.CreateAsync(TasksApi.DTOs.TasksDTO)">
+            <summary>
+             Inclui uma nova tarefa
+            </summary>
+            <remarks>
+             Exemplo de requisição:
+             POST api/tasks
+             {
+                 "name": "Comprar playstation 5",
+                 "isCompleted": true
+             }
+            </remarks>
+             <param name="TasksDTO">Data Transfer Object da tarefa</param>
+            <returns>Objeto tarefa incluído</returns>
+        </member>
+    </members>
+</doc>

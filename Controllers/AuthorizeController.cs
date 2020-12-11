@@ -27,7 +27,50 @@ namespace TasksApi.Controllers
             _configuration = configuration;
         }
 
-        public UserToken GenerateToken(UserDTO userInfo)
+        [HttpGet]
+        public ActionResult<string> Get()
+        {
+            return $"Authorize :: access in : { DateTime.Now.ToLongDateString() }";
+        }
+
+        [HttpPost("register")]
+        public async Task<ActionResult> RegisterUserAsync([FromBody] UserDTO model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.Values.SelectMany(e => e.Errors));
+
+            var user = new IdentityUser
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                EmailConfirmed = true
+            };
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            await _sigInManager.SignInAsync(user, false);
+            return Ok(GenerateToken(model));
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult> LoginAsync([FromBody] UserDTO userInfo)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.Values.SelectMany(e => e.Errors));
+
+            var result = await _sigInManager.PasswordSignInAsync(userInfo.Email, userInfo.Password, isPersistent: false, lockoutOnFailure: false);
+            if (result.Succeeded)
+                return Ok(GenerateToken(userInfo));
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Login inválido...");
+                return BadRequest(ModelState);
+            }
+        }
+
+        private UserToken GenerateToken(UserDTO userInfo)
         {
             var claims = new[]
             {
@@ -57,49 +100,6 @@ namespace TasksApi.Controllers
                 Expiration = expiration,
                 Message = "Token JWT generated successfully!!!"
             };
-        }
-
-        [HttpGet]
-        public ActionResult<string> Get()
-        {
-            return $"Authorize :: access in : { DateTime.Now.ToLongDateString() }";
-        }
-
-        [HttpPost("register")]
-        public async Task<ActionResult> RegisterUser([FromBody] UserDTO model)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState.Values.SelectMany(e => e.Errors));
-
-            var user = new IdentityUser
-            {
-                UserName = model.Email,
-                Email = model.Email,
-                EmailConfirmed = true
-            };
-
-            var result = await _userManager.CreateAsync(user, model.Password);
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
-
-            await _sigInManager.SignInAsync(user, false);
-            return Ok(GenerateToken(model));
-        }
-
-        [HttpPost("login")]
-        public async Task<ActionResult> Login([FromBody] UserDTO userInfo)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState.Values.SelectMany(e => e.Errors));
-
-            var result = await _sigInManager.PasswordSignInAsync(userInfo.Email, userInfo.Password, isPersistent: false, lockoutOnFailure: false);
-            if (result.Succeeded)
-                return Ok(GenerateToken(userInfo));
-            else
-            {
-                ModelState.AddModelError(string.Empty, "Login inválido...");
-                return BadRequest(ModelState);
-            }
         }
     }
 }
