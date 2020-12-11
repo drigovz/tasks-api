@@ -15,6 +15,7 @@ using TasksApi.Repository;
 
 namespace TasksApi.Controllers
 {
+    [Produces("application/json")]
     [ApiVersion("1.0")]
     [Route("api/[Controller]")]
     [ApiController]
@@ -104,7 +105,7 @@ namespace TasksApi.Controllers
         ///     "isCompleted": true
         /// }
         ///</remarks>
-        /// <param name="TasksDTO">Data Transfer Object da tarefa</param>
+        /// <param name="taskDTO">Data Transfer Object da tarefa</param>
         ///<returns>Objeto tarefa incluído</returns>
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPost]

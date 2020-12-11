@@ -12,6 +12,7 @@ using TasksApi.DTOs;
 
 namespace TasksApi.Controllers
 {
+    [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
     public class AuthorizeController : ControllerBase

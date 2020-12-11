@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -83,8 +84,9 @@ namespace TasksApi
                     }
                 });
 
-                var xmlFile = Path.Combine("Doc/Doc.xml");
-                c.IncludeXmlComments(xmlFile);
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
 
             services.AddControllers();
