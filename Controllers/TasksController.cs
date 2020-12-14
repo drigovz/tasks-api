@@ -19,6 +19,7 @@ namespace TasksApi.Controllers
     [ApiVersion("1.0")]
     [Route("api/[Controller]")]
     [ApiController]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     public class TasksController : ControllerBase
     {
         private readonly IUnitOfWork _uof;
