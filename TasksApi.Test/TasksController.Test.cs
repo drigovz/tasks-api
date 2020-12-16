@@ -1,5 +1,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using TasksApi.Controllers;
 using TasksApi.Data;
 using TasksApi.DTOs.Mappings;
 using TasksApi.Repository;
@@ -21,7 +23,7 @@ namespace TasksApi.Test
             .Options;
         }
 
-        public TasksControllerTest()
+        public TasksControllerTest(ILogger<TasksController> logger)
         {
             var config = new MapperConfiguration(c =>
             {
@@ -32,9 +34,11 @@ namespace TasksApi.Test
             var context = new AppDbContext(dbContextOptions);
 
             //DbUnitTestsMockInitializer db = new DbUnitTestsMockInitializer();
-            //db.Seed(context);
+            //db.Seed(context);  
 
             _uof = new UnitOfWork(context);
         }
+
+        // implementação dos testes 
     }
 }
